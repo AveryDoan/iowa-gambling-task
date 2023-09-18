@@ -2,7 +2,9 @@ import sys
 import os
 import random
 import csv
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog, QLineEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
+from PyQt5.QtCore import Qt
+
 
 class IowaGamblingTaskGUI(QWidget):
     def __init__(self):
@@ -21,8 +23,11 @@ class IowaGamblingTaskGUI(QWidget):
         self.choices = []
         self.total_money = 2000
 
-        self.result_label = QLabel("You have", self)
+        self.result_label = QLabel("", self)
         self.money_label = QLabel(f'Money: ${self.total_money}', self)
+
+        self.result_label.setAlignment(Qt.AlignCenter)
+        self.money_label.setAlignment(Qt.AlignCenter)
 
         self.vbox = QVBoxLayout()
         self.vbox.addWidget(self.result_label)
@@ -81,31 +86,25 @@ class IowaGamblingTaskGUI(QWidget):
             reward = random.choice(self.deck_rewards[deck_index])  # Randomly select a reward/punishment
             self.total_money += reward
 
-        self.round_num += 1
-        if self.round_num < 100:
+            self.round_num += 1
             self.update_labels()
-        else:
-            self.save_to_csv()
+            self.display_result(reward)
+            self.save_to_csv()  # Save total money after each round
+
+            if self.round_num == 100:
+                self.save_to_csv()  # Save total money after the 100th round
+                self.close()
 
     def update_labels(self):
         self.money_label.setText(f'Money: ${self.total_money}')
         if self.round_num < len(self.choices):
             reward = self.deck_rewards[self.choices[self.round_num]][self.round_num]
-            if reward > 0:
-                self.show_result(f'You won ${reward}')
-            else:
-                self.show_result(f'You lost ${abs(reward)}')
+
+    def display_result(self, reward):
+        if reward > 0:
+            self.result_label.setText(f'You won: ${reward}')
         else:
-            self.show_result('')
-
-    def show_result(self, message):
-        if hasattr(self, 'result_message'):
-            self.result_message.deleteLater()  # Remove the previous message if it exists
-
-        self.result_message = QLabel(message, self)
-        self.vbox.addWidget(self.result_message)
-
-
+            self.result_label.setText(f'You lost: ${-reward}')
 
     def save_to_csv(self):
         output_dir = "/Users/baoquynh/Downloads/Iowa gambling main/data"
@@ -119,8 +118,6 @@ class IowaGamblingTaskGUI(QWidget):
             for i, choice in enumerate(self.choices):
                 good_choice = 1 if choice >= 2 else 0
                 writer.writerow([self.student_name, self.study_batch, choice + 1, good_choice, self.total_money])
-
-        self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
