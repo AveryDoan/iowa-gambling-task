@@ -47,31 +47,31 @@ class IowaGamblingTaskGUI(QWidget):
         self.input_window()
 
     def input_window(self):
-        input_label = QLabel('Enter Student Information:', self)
-        name_input_label = QLabel('Enter your name:', self)
+        self.input_label = QLabel('Enter Student Information:', self)
+        self.name_input_label = QLabel('Enter your name:', self)
         self.name_input = QLineEdit(self)
-        batch_input_label = QLabel('Enter your batch:', self)
+        self.batch_input_label = QLabel('Enter your batch:', self)
         self.batch_input = QLineEdit(self)
-        gender_input_label = QLabel('Select your gender:', self)
+        self.gender_input_label = QLabel('Select your gender:', self)
         self.gender_input = QComboBox(self)
         self.gender_input.addItems(['Male', 'Female', 'Prefer not to say'])
 
-        start_button = QPushButton('Start', self)
-        start_button.clicked.connect(self.start_game)
+        self.start_button = QPushButton('Start', self)  # Define self.start_button
+        self.start_button.clicked.connect(self.start_game)
 
         input_layout = QVBoxLayout()
-        input_layout.addWidget(input_label)
-        input_layout.addWidget(name_input_label)
+        input_layout.addWidget(self.input_label)
+        input_layout.addWidget(self.name_input_label)
         input_layout.addWidget(self.name_input)
-        input_layout.addWidget(batch_input_label)
+        input_layout.addWidget(self.batch_input_label)
         input_layout.addWidget(self.batch_input)
-        input_layout.addWidget(gender_input_label)
+        input_layout.addWidget(self.gender_input_label)
         input_layout.addWidget(self.gender_input)
-        input_layout.addWidget(start_button)
+        input_layout.addWidget(self.start_button)  # Use self.start_button
 
         self.vbox.addLayout(input_layout)
 
-
+    
     def init_game(self):
         self.deck_rewards = [
             [100, 200, -350, -300],  # Deck A
@@ -84,6 +84,14 @@ class IowaGamblingTaskGUI(QWidget):
         self.student_name = self.name_input.text()
         self.study_batch = self.batch_input.text()
         self.gender = self.gender_input.currentText()
+
+        self.input_label.hide()
+        self.name_input_label.hide()
+        self.batch_input_label.hide()
+        self.gender_input_label.hide()
+
+        self.clear_input_window()
+        self.update_labels()
         self.clear_input_window()
         self.update_labels()
 
