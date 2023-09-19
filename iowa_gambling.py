@@ -2,7 +2,7 @@ import sys
 import os
 import random
 import csv
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QComboBox
 from PyQt5.QtCore import Qt
 
 
@@ -52,8 +52,10 @@ class IowaGamblingTaskGUI(QWidget):
         self.name_input = QLineEdit(self)
         batch_input_label = QLabel('Enter your batch:', self)
         self.batch_input = QLineEdit(self)
-        gender_input_label = QLabel('Enter your gender:', self)
-        self.gender_input = QLineEdit(self)
+        gender_input_label = QLabel('Select your gender:', self)
+        self.gender_input = QComboBox(self)
+        self.gender_input.addItems(['Male', 'Female', 'Prefer not to say'])
+
         start_button = QPushButton('Start', self)
         start_button.clicked.connect(self.start_game)
 
@@ -69,6 +71,7 @@ class IowaGamblingTaskGUI(QWidget):
 
         self.vbox.addLayout(input_layout)
 
+
     def init_game(self):
         self.deck_rewards = [
             [100, 200, -350, -300],  # Deck A
@@ -80,7 +83,7 @@ class IowaGamblingTaskGUI(QWidget):
     def start_game(self):
         self.student_name = self.name_input.text()
         self.study_batch = self.batch_input.text()
-        self.gender = self.gender_input.text()
+        self.gender = self.gender_input.currentText()
         self.clear_input_window()
         self.update_labels()
 
@@ -104,8 +107,24 @@ class IowaGamblingTaskGUI(QWidget):
             self.save_to_csv()  # Save total money after each round
 
             if self.round_num == 100:
-                self.save_to_csv()  # Save total money after the 100th round
-                self.close()
+                self.save_to_csv()
+                self.show_thank_you_message()  # Save total money after the 100th round
+
+
+
+    def show_thank_you_message(self):
+        for button in self.deck_buttons:
+            button.hide()
+
+        # Hide other labels
+        self.result_label.hide()
+        self.money_label.hide()
+
+        # Show the thank you message
+        thank_you_label = QLabel('Thank you for participation!', self)
+        self.vbox.addWidget(thank_you_label)
+
+
 
     def update_labels(self):
         self.money_label.setText(f'Money: ${self.total_money}')
