@@ -19,6 +19,7 @@ class IowaGamblingTaskGUI(QWidget):
 
         self.student_name = ""
         self.study_batch = ""
+        self.gender = ""
         self.round_num = 0
         self.choices = []
         self.total_money = 2000
@@ -49,6 +50,7 @@ class IowaGamblingTaskGUI(QWidget):
         input_label = QLabel('Enter Student Information:', self)
         self.name_input = QLineEdit(self)
         self.batch_input = QLineEdit(self)
+        self.gender_input = QLineEdit(self)
         start_button = QPushButton('Start', self)
         start_button.clicked.connect(self.start_game)
 
@@ -56,6 +58,7 @@ class IowaGamblingTaskGUI(QWidget):
         input_layout.addWidget(input_label)
         input_layout.addWidget(self.name_input)
         input_layout.addWidget(self.batch_input)
+        input_layout.addWidget(self.gender_input)
         input_layout.addWidget(start_button)
 
         self.vbox.addLayout(input_layout)
@@ -71,12 +74,14 @@ class IowaGamblingTaskGUI(QWidget):
     def start_game(self):
         self.student_name = self.name_input.text()
         self.study_batch = self.batch_input.text()
+        self.gender = self.gender_input.text()
         self.clear_input_window()
         self.update_labels()
 
     def clear_input_window(self):
         self.name_input.deleteLater()
         self.batch_input.deleteLater()
+        self.gender_input.deleteLater()
         sender = self.sender()
         sender.deleteLater()
 
@@ -113,11 +118,11 @@ class IowaGamblingTaskGUI(QWidget):
 
         with open(file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["Student Name", "Study Batch", "Choice", "Good Choice", "Total Money"])
+            writer.writerow(["Student Name", "Study Batch","Gender", "Choice", "Good Choice", "Total Money"])
 
             for i, choice in enumerate(self.choices):
                 good_choice = 1 if choice >= 2 else 0
-                writer.writerow([self.student_name, self.study_batch, choice + 1, good_choice, self.total_money])
+                writer.writerow([self.student_name, self.study_batch, self.gender, choice + 1, good_choice, self.total_money])
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
