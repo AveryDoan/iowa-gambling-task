@@ -48,16 +48,22 @@ class IowaGamblingTaskGUI(QWidget):
 
     def input_window(self):
         input_label = QLabel('Enter Student Information:', self)
+        name_input_label = QLabel('Enter your name:', self)
         self.name_input = QLineEdit(self)
+        batch_input_label = QLabel('Enter your batch:', self)
         self.batch_input = QLineEdit(self)
+        gender_input_label = QLabel('Enter your gender:', self)
         self.gender_input = QLineEdit(self)
         start_button = QPushButton('Start', self)
         start_button.clicked.connect(self.start_game)
 
         input_layout = QVBoxLayout()
         input_layout.addWidget(input_label)
+        input_layout.addWidget(name_input_label)
         input_layout.addWidget(self.name_input)
+        input_layout.addWidget(batch_input_label)
         input_layout.addWidget(self.batch_input)
+        input_layout.addWidget(gender_input_label)
         input_layout.addWidget(self.gender_input)
         input_layout.addWidget(start_button)
 
@@ -84,6 +90,7 @@ class IowaGamblingTaskGUI(QWidget):
         self.gender_input.deleteLater()
         sender = self.sender()
         sender.deleteLater()
+
 
     def on_deck_click(self, deck_index):
         if self.round_num < 100:
