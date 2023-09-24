@@ -5,7 +5,6 @@ import csv
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QComboBox
 from PyQt5.QtCore import Qt
 
-
 class IowaGamblingTaskGUI(QWidget):
     def __init__(self):
         super().__init__()
@@ -56,7 +55,7 @@ class IowaGamblingTaskGUI(QWidget):
         self.gender_input = QComboBox(self)
         self.gender_input.addItems(['Male', 'Female', 'Prefer not to say'])
 
-        self.start_button = QPushButton('Start', self)  # Define self.start_button
+        self.start_button = QPushButton('Start', self)
         self.start_button.clicked.connect(self.start_game)
 
         input_layout = QVBoxLayout()
@@ -67,17 +66,16 @@ class IowaGamblingTaskGUI(QWidget):
         input_layout.addWidget(self.batch_input)
         input_layout.addWidget(self.gender_input_label)
         input_layout.addWidget(self.gender_input)
-        input_layout.addWidget(self.start_button)  # Use self.start_button
+        input_layout.addWidget(self.start_button)
 
         self.vbox.addLayout(input_layout)
 
-    
     def init_game(self):
         self.deck_rewards = [
-            [100, 200, -350, -300],  # Deck A
-            [100, 200, -350, -300],  # Deck B
-            [50, 100, -25, 50],     # Deck C
-            [100, 50, -25, 50]      # Deck D
+            {'win': [100, 200], 'lose': [-350, -300]},  # Deck A: Can win 100 or 500, lose -350 or -300
+            {'win': [100, 200], 'lose': [-350, -300]},  # Deck B: Can win 100 or 500, lose -350 or -300
+            {'win': [50, 100], 'lose': [-25, -50]},     # Deck C: Can win 50 or 100, lose -25 or -50
+            {'win': [50, 100], 'lose': [-25, -50]}       # Deck D: Can win 50 or 100, lose -25 or -50
         ]
 
     def start_game(self):
@@ -92,8 +90,6 @@ class IowaGamblingTaskGUI(QWidget):
 
         self.clear_input_window()
         self.update_labels()
-        self.clear_input_window()
-        self.update_labels()
 
     def clear_input_window(self):
         self.name_input.deleteLater()
@@ -102,48 +98,42 @@ class IowaGamblingTaskGUI(QWidget):
         sender = self.sender()
         sender.deleteLater()
 
-
     def on_deck_click(self, deck_index):
         if self.round_num < 100:
-            self.choices.append(deck_index)
-            reward = random.choice(self.deck_rewards[deck_index])  # Randomly select a reward/punishment
-            self.total_money += reward
+            win_amount = random.choice(self.deck_rewards[deck_index]['win'])
+            lose_amount = random.choice(self.deck_rewards[deck_index]['lose'])
+
+            win_message = f'You won: ${win_amount}'
+            lose_message = f'You lost: ${-lose_amount}'
+
+            self.total_money = self.total_money + win_amount + lose_amount
 
             self.round_num += 1
+
             self.update_labels()
-            self.display_result(reward)
+            self.display_result(win_message, lose_message)
             self.save_to_csv()  # Save total money after each round
 
             if self.round_num == 100:
                 self.save_to_csv()
-                self.show_thank_you_message()  # Save total money after the 100th round
-
-
+                self.show_thank_you_message()
 
     def show_thank_you_message(self):
         for button in self.deck_buttons:
             button.hide()
 
-        # Hide other labels
         self.result_label.hide()
         self.money_label.hide()
 
-        # Show the thank you message
         thank_you_label = QLabel('Thank you for participation!', self)
         self.vbox.addWidget(thank_you_label)
 
-
-
     def update_labels(self):
         self.money_label.setText(f'Money: ${self.total_money}')
-        if self.round_num < len(self.choices):
-            reward = self.deck_rewards[self.choices[self.round_num]][self.round_num]
 
-    def display_result(self, reward):
-        if reward > 0:
-            self.result_label.setText(f'You won: ${reward}')
-        else:
-            self.result_label.setText(f'You lost: ${-reward}')
+    def display_result(self, win_message, lose_message):
+        result_text = f'{win_message}\n{lose_message}'
+        self.result_label.setText(result_text)
 
     def save_to_csv(self):
         output_dir = "/Users/baoquynh/Downloads/Iowa gambling main/data"
@@ -152,7 +142,7 @@ class IowaGamblingTaskGUI(QWidget):
 
         with open(file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["Student Name", "Study Batch","Gender", "Choice", "Good Choice", "Total Money"])
+            writer.writerow(["Student Name", "Study Batch", "Gender", "Choice", "Good Choice", "Total Money"])
 
             for i, choice in enumerate(self.choices):
                 good_choice = 1 if choice >= 2 else 0
