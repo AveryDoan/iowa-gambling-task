@@ -107,6 +107,7 @@ class IowaGamblingTaskGUI(QWidget):
             lose_message = f'You lost: ${-lose_amount}'
 
             self.total_money = self.total_money + win_amount + lose_amount
+            self.choices.append(deck_index)  # Add the chosen deck index to choices
 
             self.round_num += 1
 
@@ -136,7 +137,7 @@ class IowaGamblingTaskGUI(QWidget):
         self.result_label.setText(result_text)
 
     def save_to_csv(self):
-        output_dir = "/Users/baoquynh/Downloads/Iowa gambling main/data"
+        output_dir = "/Users/baoquynh/Downloads/Iowa gambling main/data"  # Change to a relative path for portability
         os.makedirs(output_dir, exist_ok=True)
         file_path = os.path.join(output_dir, f"{self.student_name}_{self.study_batch}.csv")
 
