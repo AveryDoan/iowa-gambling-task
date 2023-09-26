@@ -3,7 +3,7 @@ import os
 import random
 import csv
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QComboBox
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QSize
 
 class IowaGamblingTaskGUI(QWidget):
@@ -48,6 +48,7 @@ class IowaGamblingTaskGUI(QWidget):
             card_image.setPixmap(QPixmap(card_image_path).scaled(50, 70, Qt.KeepAspectRatio))
 
             deck_button = QPushButton("", self)
+            deck_button.setIcon(QIcon(card_image.pixmap()))
             deck_button.setIconSize(QSize(50, 70))
 
             deck_button.clicked.connect(lambda checked, i=i: self.on_deck_click(i))
@@ -58,9 +59,6 @@ class IowaGamblingTaskGUI(QWidget):
         self.vbox.addLayout(self.hbox)
 
         self.input_window()
-
-        # Set the main layout for the window
-        self.setLayout(self.vbox)
 
     def input_window(self):
         self.input_label = QLabel('Enter Student Information:', self)
@@ -87,6 +85,9 @@ class IowaGamblingTaskGUI(QWidget):
         input_layout.addWidget(self.start_button)
 
         self.vbox.addLayout(input_layout)
+
+        # Set the main layout for the window
+        self.setLayout(self.vbox)
 
     def init_game(self):
         self.deck_rewards = [
