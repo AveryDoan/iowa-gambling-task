@@ -2,8 +2,9 @@ import sys
 import os
 import random
 import csv
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QComboBox
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QComboBox
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, QSize
 
 class IowaGamblingTaskGUI(QWidget):
     def __init__(self):
@@ -37,18 +38,29 @@ class IowaGamblingTaskGUI(QWidget):
         self.vbox.addWidget(self.result_label)
         self.vbox.addWidget(self.money_label)
 
+        self.hbox = QHBoxLayout()
+
         self.deck_buttons = []
 
         for i in range(4):
-            deck_button = QPushButton(f'Deck {i + 1}', self)
-            deck_button.clicked.connect(lambda checked, i=i: self.on_deck_click(i))
-            deck_button.setStyleSheet("background-color: #E64A19; color: white;")
-            self.deck_buttons.append(deck_button)
-            self.vbox.addWidget(deck_button)
+            card_image_path = os.path.join(os.path.dirname(__file__), 'playing-card.png')
+            card_image = QLabel(self)
+            card_image.setPixmap(QPixmap(card_image_path).scaled(50, 70, Qt.KeepAspectRatio))
 
-        self.setLayout(self.vbox)
+            deck_button = QPushButton("", self)
+            deck_button.setIconSize(QSize(50, 70))
+
+            deck_button.clicked.connect(lambda checked, i=i: self.on_deck_click(i))
+            deck_button.setStyleSheet("background-color: transparent;")
+            self.deck_buttons.append(deck_button)
+            self.hbox.addWidget(deck_button)
+
+        self.vbox.addLayout(self.hbox)
 
         self.input_window()
+
+        # Set the main layout for the window
+        self.setLayout(self.vbox)
 
     def input_window(self):
         self.input_label = QLabel('Enter Student Information:', self)
